@@ -1,0 +1,33 @@
+RESTART
+
+# set up two groups to calc the ditance 
+COM ATOMS=12-29         LABEL=site1_A
+COM ATOMS=524-556       LABEL=site1_B
+COM ATOMS=383-394       LABEL=site2_A
+COM ATOMS=770-788       LABEL=site2_B
+DISTANCE ATOMS=site1_A,site1_B  LABEL=d1
+DISTANCE ATOMS=site2_A,site2_B  LABEL=d2
+
+# depositing a Gaussian every 500 time steps,
+# with height equal to 1.0 kJ/mol,
+# and width 0.1 nm for both CVs.
+# Bias factor of 80, which is (T+dT/T), at Temp=310K (~37C) 
+
+METAD ...
+LABEL=metad
+ARG=d1,d2               # labels of the two CVs
+SIGMA=0.1,0.1           # width of the Gaussians for the two CVs
+HEIGHT=1               # Starting Gaussian height
+PACE=14000               # timestep pace for Gaussian deposition
+FILE=HILLS              # File to output the timestep, CV values, Gaussian heights (or free energy estimate)
+TEMP=310.0              # system temperature (for use in determining free energy estimate)
+BIASFACTOR=80
+GRID_MIN=0.0,0.0
+GRID_MAX=36.0,36.0
+GRID_SPACING=0.02,0.02
+CALC_RCT
+... METAD 
+
+PRINT STRIDE=1000 ARG=d1,d2,metad.bias,metad.rct,metad.rbias FILE=COLVAR
+
+#DUMPMASSCHARGE FILE=mcfile

@@ -1,0 +1,21 @@
+#include "martini_v3.0.b.3.2.itp"
+#include "martini_v3.0_ions.itp"
+#include "martini_v3.0_WN.itp"
+#include "martini_v3.0_phospholipids_r.itp"
+#include "martini_v3.0-openbeta_POP6.itp"
+#include "Protein_A.itp"
+
+[ system ]
+; name
+Martini system from protein.pdb in water
+
+[ molecules ]
+; name        number
+Protein_A 	 1
+Protein_A 	 1
+WN          206697
+;TNA              1559
+;TCL              1559
+;TNA              24
+;WN              220160
+WN              220210

@@ -1,0 +1,14 @@
+#include "martini_v3.0.b.3.2.itp"
+#include "martini_v3.0_solvents.itp"
+#include "martini_v3.0_ions.itp"
+
+#include "Protein_A.itp"
+#include "Protein_B.itp"
+
+[ system ]
+; name
+Martini system from protein_pdb/final_chainAB.pdb
+
+[ molecules ]
+; name        number
+Protein_B 	 1

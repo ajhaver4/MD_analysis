@@ -1,0 +1,44 @@
+RESTART
+
+# set up two groups to calc the ditance 
+COM ATOMS=12-29         LABEL=site1_A
+COM ATOMS=524-556       LABEL=site1_B
+COM ATOMS=383-394       LABEL=site2_A
+COM ATOMS=770-788       LABEL=site2_B
+DISTANCE ATOMS=site1_A,site1_B  LABEL=d1
+DISTANCE ATOMS=site2_A,site2_B  LABEL=d2
+
+COM ATOMS=1-469 LABEL=comA 
+COM ATOMS=470-938 LABEL=comB
+
+POSITION ATOM=comA LABEL=posA NOPBC
+POSITION ATOM=comB LABEL=posB NOPBC
+# depositing a Gaussian every 500 time steps,
+# with height equal to 1.0 kJ/mol,
+# and width 0.1 nm for both CVs.
+# Bias factor of 80, which is (T+dT/T), at Temp=310K (~37C) 
+
+METAD ...
+LABEL=metad
+ARG=d1,d2               # labels of the two CVs
+SIGMA=0.03,0.03           # width of the Gaussians for the two CVs
+HEIGHT=1               # Starting Gaussian height
+PACE=15000             #rate is 400 ps --> 400/40*2000=20000 steps  # timestep pace for Gaussian deposition
+FILE=HILLS              # File to output the timestep, CV values, Gaussian heights (or free energy estimate)
+TEMP=310.0              # system temperature (for use in determining free energy estimate)
+BIASFACTOR=20
+GRID_MIN=0.0,0.0
+GRID_MAX=37.0,37.0
+GRID_SPACING=0.02,0.02
+CALC_RCT
+RESTART=YES
+... METAD 
+
+PRINT STRIDE=1000 ARG=d1,d2,metad.bias,metad.rct,metad.rbias FILE=COLVAR
+DUMPMASSCHARGE FILE=mcfile
+
+UPPER_WALLS ARG=d1,d2, AT=19.0,19.0, KAPPA=500.0,500.0, EXP=2,2 LABEL=uwall
+PRINT STRIDE=1000 ARG=d1,d2,uwall.bias,uwall.force2 FILE=WALL_data
+
+UPPER_WALLS ARG=posA.z,posB.z, AT=17.0,17.0, KAPPA=500.0,500.0, EXP=2,2 LABEL=vol_res
+PRINT STRIDE=1000 ARG=posA.z,posB.z,vol_res.bias,vol_res.force2 FILE=VOL_WALL_data

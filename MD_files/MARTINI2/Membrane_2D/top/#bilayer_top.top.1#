@@ -1,0 +1,20 @@
+#include "top/martini_v2.2.itp"
+#include "top/martini_v2.0_ions.itp"
+#include "top/martini_v2.0_lipids_all_201506.itp"
+#include "Protein_A.itp"
+#include "Protein_A2.itp"
+
+[ system ]
+; name
+INSANE! Membrane UpperLeaflet>POPC:POPS:POP2=4.0:0.5:0.5 LowerLeaflet>POPC:POPS:POP2=4.0:0.5:0.5 in water
+
+[ molecules ]
+; name  number
+POPC          1692
+POPS           211
+POP2           211
+POPC          1692
+POPS           211
+POP2           211
+Protein_A	1
+Protein_A2	1

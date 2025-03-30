@@ -1,0 +1,117 @@
+; - - - -
+; PI(4,5)P2 MODEL SUITABLE FOR MARTINI 3 OPEN-BETA VERSION
+;
+; The model was translated from the Martini 2 model of PI(4,5)P2 published in:
+; F. Sun, et al., PLoS Comput. Biol. 16:e1007777, 2020. doi.org/10.1371/journal.pcbi.1007777
+; to the open-beta version of the Martini 3 force field.
+; 
+; When using this model, please cite:
+; F. Sun, et al., PLoS Comput. Biol. 16:e1007777, 2020. doi.org/10.1371/journal.pcbi.1007777
+; and
+; V. Thallmair, et al., bioRxiv, 2020. https://doi.org/10.1101/2020.09.23.309492 
+; 
+; (Sebastian Thallmair)
+; - - - -
+;
+;;;;;; Martini lipid topology for C16:0/18:1 PIP2 (POP6):
+;
+; POP6 ==> PIP(2)-4,5
+;
+;  
+;        P4,P5     # Both, P4 & P5, are bound to C2 & C3 but with different bond lenghts and different 3D orientation.
+;        /   \     # phosphate-4 [front]
+;       C3 - C2    # phosphate-5 [back]
+;        \  /   
+;         C1  
+;         |
+;        PO4
+;         |
+;        GL1 - C1A - D2A - C3A - C4A
+;         |
+;        GL2 - C1B - C2B - C3B - C4B
+
+[moleculetype]
+; molname      nrexcl
+  POP6          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	SP1 	 1 	POP6 	C1  	 1 	0
+   2 	SP1 	 1 	POP6 	C2  	 2 	0
+   3 	SP1 	 1 	POP6 	C3  	 3 	0
+   4 	Q1 	 1 	POP6 	PO4 	 4 	-1.0
+   5 	Q2 	 1 	POP6 	P4  	 5 	-2.0
+   6 	Q2 	 1 	POP6 	P5  	 6 	-2.0
+; Tail part (uses standar Martini v2.0 tail rules)
+   7 	N2a 	 1 	POP6 	GL1 	 7 	0
+   8 	N2a 	 1 	POP6 	GL2 	 8 	0
+   9 	C1 	 1 	POP6 	C1A 	 9 	0
+  10 	C3 	 1 	POP6 	D2A 	10 	0
+  11 	C1 	 1 	POP6 	C3A 	11 	0
+  12 	C1 	 1 	POP6 	C4A 	12 	0
+  13 	C1 	 1 	POP6 	C1B 	13 	0
+  14 	C1 	 1 	POP6 	C2B 	14 	0
+  15 	C1 	 1 	POP6 	C3B 	15 	0
+  16 	C1 	 1 	POP6 	C4B 	16 	0
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  3 	1 	0.40 	30000 	
+   1  2 	1 	0.40 	30000 	
+   3  2 	1 	0.40 	30000 	
+   3  5 	1 	0.40 	25000  ; C3-P4
+   3  6 	1 	0.30 	30000  ; C3-P5
+   2  6 	1 	0.40 	25000  ; C2-P5
+   2  5 	1 	0.30 	30000  ; C2-P4	
+#endif
+;  5  6 	1 	0.60 	25000 	; Not needed anymore as P1-C1-C2-C3 and P2-C2-C1-C3 dihedras were introduced.
+   1  4 	1 	0.35 	1250 	
+   4  7 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  8 	1 	0.37 	1250 	
+   7  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+   8 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  7 	2 	140.0 	25.0 	
+   4  7  8      2       120.0   25.0    
+   4  7  9      2       180.0   25.0    
+   2  1  4      2       140.0  400.0    
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	120.0 	45.0 	
+  10 11 12 	2 	180.0 	25.0 	
+   8 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+;  3  1  4  7   1       -30.0    5.0   1  ; Removed as it was unstable - WARNING has not been tested
+   5  1  2  3   1        50.0   12.0   1  
+   6  2  1  3   1       180.0  100.0   1  
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  3 	1 	0.40
+   1  2 	1 	0.40 	
+   3  2 	1 	0.40 	
+   3  5 	1 	0.40	
+   3  6 	1 	0.30 	
+   2  6 	1 	0.40 	
+   2  5 	1 	0.30 	
+#endif
+

@@ -1,0 +1,68 @@
+RESTART
+
+# set up two groups to calc the ditance 
+COM ATOMS=52436-52453        LABEL=site1_A
+COM ATOMS=52937-52968       LABEL=site1_B
+COM ATOMS=52799-52810       LABEL=site2_A
+COM ATOMS=53178-53196       LABEL=site2_B
+DISTANCE ATOMS=site1_A,site1_B  LABEL=d1
+DISTANCE ATOMS=site2_A,site2_B  LABEL=d2
+# depositing a Gaussian every 500 time steps,
+# with height equal to 1.0 kJ/mol,
+# and width 0.1 nm for both CVs.
+# Bias factor of 80, which is (T+dT/T), at Temp=310K (~37C) 
+
+
+METAD ...
+LABEL=metad
+ARG=d1,d2               # labels of the two CVs
+SIGMA=0.04,0.04           # width of the Gaussians for the two CVs
+HEIGHT=2                # Starting Gaussian height
+PACE=15000               # timestep pace for Gaussian deposition
+FILE=HILLS              # File to output the timestep, CV values, Gaussian heights (or free energy estimate)
+TEMP=310.0              # system temperature (for use in determining free energy estimate)
+GRID_MIN=0.0,0.0
+GRID_MAX=38.0,38.0
+GRID_SPACING=0.02,0.02
+#BIASFACTOR=20.0
+... METAD 
+# monitor the two variables and the metadynamics bias potential
+PRINT STRIDE=1000 ARG=d1,d2 FILE=COLVAR
+
+UPPER_WALLS ARG=d1,d2 AT=19.0,19.0, KAPPA=500.0,500.0, EXP=2,2 LABEL=uwall
+PRINT STRIDE=1000 ARG=d1,d2,uwall.bias,uwall.force2 FILE=WALL_data
+
+#Colvar Analysis
+#Group for diff species
+#chainA: GROUP ATOMS=52425-52882
+#chainB: GROUP ATOMS=52883-53340
+
+#memb_A: GROUP ATOMS=52433-52435,52449-52451,52456-52458,52464-52466,52594-52596,52601-52603
+#memb_B: GROUP ATOMS=52891-52893,52907-52909,52914-52916,52922-52924,53052-53054,53059-53061
+#Protein is bound to layer 1. Confirmed visually 
+#pc_lay1: GROUP ATOMS=2-20294:12
+#ps_lay1: GROUP ATOMS=20306-22826:12
+#pip_lay1: GROUP ATOMS=22840-26200:16
+
+#upp_lay: GROUP ATOMS=pc_lay1,ps_lay1,pip_lay1
+
+#pc_lay2: GROUP ATOMS=26214-46506:12
+#ps_lay2: GROUP ATOMS=46518-49038:12
+#pip_lay2: GROUP ATOMS=49052-52412:16
+
+#low_lay: GROUP ATOMS=pc_lay2,ps_lay2,pip_lay2
+
+#Calculating distance from membrane
+#min_A: DISTANCES GROUPA=chainA GROUPB=upp_lay MIN={BETA=0.1} LOWEST
+#min_B: DISTANCES GROUPA=chainB GROUPB=upp_lay MIN={BETA=0.1} LOWEST
+
+#memb_dist_A: DISTANCES GROUPA=memb_A GROUPB=pc_lay1,ps_lay1,pip_lay1 MIN={BETA=0.1} LOWEST
+#memb_dist_B: DISTANCES GROUPA=memb_B GROUPB=pc_lay1,ps_lay1,pip_lay1 MIN={BETA=0.1} LOWEST
+
+#Calculating longitudnal angle of each chain
+#l_angA: ZANGLES ATOMS1=52668,52819 MEAN
+#l_angB: ZANGLES ATOMS1=53126,53277 MEAN
+
+#Write all outputs
+#PRINT ARG=d1,d2,min_A.lowest,min_B.lowest,memb_dist_A.lowest,memb_dist_B.lowest,l_angA.mean,l_angB.mean STRIDE=2000 FILE=MEMB_DISTANCES
+

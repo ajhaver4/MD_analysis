@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#SBATCH --job-name=Backmap
+#SBATCH -o myjob.%j.out		 
+#SBATCH -e myerr.%j.err
+#SBATCH --partition=shared
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=24
+#SBATCH --time=24:00:00
+#SBATCH --no-requeue
+
+#ml restore mdanalysis
+ml restore conda_gromacs
+export PYTHONPATH='/home/ajhaver4/.conda/envs/mdanalysis/lib/python3.7/site-packages/'
+conda activate py2_env
+
+#Crystal Structure
+file="lspAB_CG.pdb"
+../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_crystal.log 2>&1
+
+file="d1_Avg_3D.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d1_3D.log 2>&1
+file="d2_Avg_3D.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d2_3D.log 2>&1
+
+#Membrane - 2D
+file="d1_Avg_2D.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d1_2D.log 2>&1
+file="d2_Avg_2D.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d2_2D.log 2>&1
+
+#Pseudo Membrane
+file="d1_Avg_Ps.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d1_Ps.log 2>&1
+file="d2_Avg_Ps.gro"
+#../initram-v5.sh -f $file -o ${file}_atomistic.gro -to charmm36 -p charmm36_top.top > Output_d2_Ps.log 2>&1
